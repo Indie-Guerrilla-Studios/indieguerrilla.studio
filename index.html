@@ -810,15 +810,15 @@
      <form class="contact-form" action="https://formspree.io/f/xjgldykp" method="POST">
         <div class="form-row">
           <label for="name">Your Name</label>
-          <input type="text" id="name" placeholder="Full name" required />
+          <input type="text" id="name" name="name" placeholder="Full name" required />
         </div>
         <div class="form-row">
           <label for="email">Email Address</label>
-          <input type="email" id="email" placeholder="you@example.com" required />
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
         </div>
         <div class="form-row">
           <label for="service">Service Interest</label>
-          <select id="service">
+          <select id="service" name="service">
             <option value="">Select a service...</option>
             <option>Lessons</option>
             <option>Consulting</option>
@@ -833,7 +833,7 @@
         </div>
         <div class="form-row">
           <label for="message">Message</label>
-          <textarea id="message" placeholder="Tell us about your project..." required></textarea>
+          <textarea id="message" name="message" placeholder="Tell us about your project..." required></textarea>
         </div>
         <button type="submit" class="form-submit"><span>SEND MESSAGE &nbsp;▶</span></button>
       </form>
