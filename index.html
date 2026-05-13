@@ -807,7 +807,7 @@
         </div>
       </div>
 
-      <form class="contact-form" onsubmit="handleSubmit(event)">
+     <form class="contact-form" action="https://formspree.io/f/xjgldykp" method="POST">
         <div class="form-row">
           <label for="name">Your Name</label>
           <input type="text" id="name" placeholder="Full name" required />
@@ -874,13 +874,8 @@
       sections.forEach(s => observer.observe(s));
 
       // Form handler
-      window.handleSubmit = (e) => {
-        e.preventDefault();
-        const btn = e.target.querySelector('.form-submit span');
-        btn.textContent = 'SENT ✓';
-        e.target.reset();
-        setTimeout(() => { btn.textContent = 'SEND MESSAGE  ▶'; }, 3000);
-      };
+
+      //Form handled by Formspree
 
     });
   </script>
