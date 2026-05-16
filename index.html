@@ -24,13 +24,13 @@
       --panel:     #eeeeee;
       --purple:    #8B69A7;
       --purple-dim:#6a4f80;
-      --orange:    #9A1D2A;
       --red:       #9A1D2A;
       --teal:      #C9719E;
       --blue:      #2B678C;
       --grey:      #8B9CA4;
       --dim:       #555555;
       --brown:     #F38379;
+      --truered:   #A41D20;
       --scanline:  rgba(0,0,0,0.04);
       --font-display: 'Bebas Neue', sans-serif;
       --font-mono:    'Share Tech Mono', monospace;
@@ -110,7 +110,7 @@ body {
     }
 
     .nav-logo span {
-      color: var(--orange);
+      color: var(--truered);
     }
 
     .nav-links {
@@ -137,12 +137,12 @@ body {
       bottom: -3px;
       width: 0;
       height: 1px;
-      background: var(--orange);
+      background: var(--truered);
       transition: width 0.25s;
     }
 
     .nav-links a:hover {
-      color: var(--orange);
+      color: var(--truered);
     }
 
     .nav-links a:hover::after {
@@ -221,7 +221,7 @@ body {
     .hero-tag {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--orange);
+      color: var(--truered);
       letter-spacing: 0.25em;
       text-transform: uppercase;
       margin-bottom: 20px;
@@ -396,7 +396,7 @@ body {
       left: 0;
       width: 3px;
       height: 0;
-      background: var(--orange);
+      background: var(--truered);
       transition: height 0.3s ease;
     }
 
@@ -475,7 +475,7 @@ body {
     }
 
     .contact-item .label {
-      color: var(--orange);
+      color: var(--truered);
       min-width: 80px;
       font-size: 11px;
       letter-spacing: 0.15em;
@@ -595,7 +595,7 @@ body {
     }
 
     .footer-copy span {
-      color: var(--orange);
+      color: var(--truered);
     }
 
     .footer-blink {
@@ -848,7 +848,7 @@ body {
             navLinks.forEach(a => {
               a.style.color = '';
               if (a.getAttribute('href') === '#' + entry.target.id) {
-                a.style.color = 'var(--orange)';
+                a.style.color = 'var(--truered)';
               }
             });
           }
