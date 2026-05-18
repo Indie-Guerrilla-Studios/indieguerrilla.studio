@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events — Indie Guerrilla Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=VT323&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --black:     #ffffff;
+      --dark:      #f5f5f5;
+      --panel:     #eeeeee;
+      --border:    #cccccc;
+      --purple:    #8B69A7;
+      --purple-dim:#6a4f80;
+      --orange:    #9A1D2A;
+      --red:       #9A1D2A;
+      --teal:      #C9719E;
+      --blue:      #2B678C;
+      --grey:      #8B9CA4;
+      --text:      #1a1a1a;
+      --dim:       #555555;
+      --scanline:  rgba(0,0,0,0.04);
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-mono:    'Share Tech Mono', monospace;
+      --font-vt:      'VT323', monospace;
+      --font-body:    'Courier Prime', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--black);
+      background-image: linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), url('background.png');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        var(--scanline) 3px,
+        var(--scanline) 4px
+      );
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 40px;
+      background: rgba(255,255,255,0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(6px);
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--purple);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--dim);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 0;
+      height: 1px;
+      background: var(--orange);
+      transition: width 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--orange); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--purple); }
+
+    /* MAIN CONTENT */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 140px 40px 100px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--purple);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::before {
+      content: '//';
+      color: var(--orange);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(42px, 6vw, 80px);
+      color: #2B678C;
+      line-height: 1;
+      margin-bottom: 60px;
+      letter-spacing: 0.03em;
+    }
+
+    /* EVENT CARDS */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .event-card {
+      background: var(--dark);
+      padding: 40px 36px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+
+    .event-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 0;
+      background: var(--orange);
+      transition: height 0.3s ease;
+    }
+
+    .event-card:hover { background: var(--panel); }
+    .event-card:hover::before { height: 100%; }
+
+    .event-month {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--orange);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .event-date {
+      font-family: var(--font-display);
+      font-size: 72px;
+      color: var(--purple);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .event-name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: #1a1a1a;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    .event-recurring {
+      font-family: var(--font-vt);
+      font-size: 18px;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+    }
+
+    .event-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 24px;
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .event-link::before {
+      content: '';
+      position: absolute;
+      left: -100%;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--orange);
+      transition: left 0.25s;
+      z-index: 0;
+    }
+
+    .event-link:hover::before { left: 0; }
+    .event-link:hover { color: #fff; }
+    .event-link span { position: relative; z-index: 1; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-copy span { color: var(--orange); }
+
+    .footer-blink {
+      font-family: var(--font-vt);
+      font-size: 18px;
+      color: var(--purple);
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .events-grid { animation: fadeUp 0.7s ease both; }
+
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { gap: 20px; }
+      main { padding: 100px 20px 60px; }
+      footer { padding: 24px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scanlines"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">IGS<span>_</span>STUDIO</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="events.html" class="active">Events</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="section-label">What We Got Going On</div>
+    <h1 class="section-title">EVENTS</h1>
+
+    <div class="events-grid">
+
+      <div class="event-card">
+        <div class="event-month" id="event-month"></div>
+        <div class="event-date" id="event-day"></div>
+        <div class="event-name">TEENIE TINY TURN UP</div>
+        <div class="event-recurring">Every last Saturday of the month</div>
+        <a href="https://www.facebook.com/events/1597867421305149" target="_blank" class="event-link">
+          <span>VIEW ON FACEBOOK &nbsp;▶</span>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-copy">
+      &copy; <span id="year"></span> <span>Indie Guerrilla Studios LLC</span>. All rights reserved.
+    </div>
+    <img src="IGS_LOGO_.png" alt="Indie Guerrilla Studios Logo" style="height:100px;opacity:0.85;" />
+    <div class="footer-blink">█</div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Calculate next last Saturday of the month
+      function getLastSaturday(year, month) {
+        const lastDay = new Date(year, month + 1, 0);
+        const dayOfWeek = lastDay.getDay();
+        const diff = (dayOfWeek >= 6) ? dayOfWeek - 6 : dayOfWeek + 1;
+        return new Date(year, month, lastDay.getDate() - diff);
+      }
+
+      const today = new Date();
+      let eventDate = getLastSaturday(today.getFullYear(), today.getMonth());
+
+      // If this month's last Saturday already passed, show next month's
+      if (eventDate < today) {
+        const nextMonth = today.getMonth() + 1;
+        const nextYear = nextMonth > 11 ? today.getFullYear() + 1 : today.getFullYear();
+        eventDate = getLastSaturday(nextYear, nextMonth % 12);
+      }
+
+      const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+
+      document.getElementById('event-month').textContent = months[eventDate.getMonth()] + ' ' + eventDate.getFullYear();
+      document.getElementById('event-day').textContent = eventDate.getDate();
+
+    });
+  </script>
+
+</body>
+</html>
