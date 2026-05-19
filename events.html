@@ -351,6 +351,9 @@
       </div>
 
     </div>
+     <div class="section-label" style="margin-top:60px;">Past Events</div>
+    <h2 class="section-title">THE ARCHIVE</h2>
+    <div class="events-grid" id="past-events"></div>
   </main>
 
   <footer>
@@ -361,36 +364,63 @@
     <div class="footer-blink">█</div>
   </footer>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
 
-      document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-      // Calculate next last Saturday of the month
-      function getLastSaturday(year, month) {
-        const lastDay = new Date(year, month + 1, 0);
-        const dayOfWeek = lastDay.getDay();
-        const diff = (dayOfWeek >= 6) ? dayOfWeek - 6 : dayOfWeek + 1;
-        return new Date(year, month, lastDay.getDate() - diff);
-      }
+    // Calculate last Saturday of any given month
+    function getLastSaturday(year, month) {
+      const lastDay = new Date(year, month + 1, 0);
+      const dayOfWeek = lastDay.getDay();
+      const diff = (dayOfWeek >= 6) ? dayOfWeek - 6 : dayOfWeek + 1;
+      return new Date(year, month, lastDay.getDate() - diff);
+    }
 
-      const today = new Date();
-      let eventDate = getLastSaturday(today.getFullYear(), today.getMonth());
+    const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    const today = new Date();
+    const startDate = new Date(2026, 0); // January 2026
 
-      // If this month's last Saturday already passed, show next month's
-      if (eventDate < today) {
-        const nextMonth = today.getMonth() + 1;
-        const nextYear = nextMonth > 11 ? today.getFullYear() + 1 : today.getFullYear();
-        eventDate = getLastSaturday(nextYear, nextMonth % 12);
-      }
+    // Build list of all events from start to now
+    const pastEvents = [];
+    let current = new Date(startDate);
 
-      const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    while (current <= today) {
+      const eventDate = getLastSaturday(current.getFullYear(), current.getMonth());
+      pastEvents.push(new Date(eventDate));
+      current.setMonth(current.getMonth() + 1);
+    }
 
-      document.getElementById('event-month').textContent = months[eventDate.getMonth()] + ' ' + eventDate.getFullYear();
-      document.getElementById('event-day').textContent = eventDate.getDate();
+    // Next upcoming event
+    let upcomingDate = getLastSaturday(today.getFullYear(), today.getMonth());
+    if (upcomingDate < today) {
+      const next = new Date(today.getFullYear(), today.getMonth() + 1);
+      upcomingDate = getLastSaturday(next.getFullYear(), next.getMonth());
+    }
 
+    // Render upcoming
+    document.getElementById('event-month').textContent = months[upcomingDate.getMonth()] + ' ' + upcomingDate.getFullYear();
+    document.getElementById('event-day').textContent = upcomingDate.getDate();
+
+    // Render past events
+    const pastContainer = document.getElementById('past-events');
+    const reversed = pastEvents.filter(d => d < today).reverse();
+
+    reversed.forEach((date, index) => {
+      const isFirst = index === reversed.length - 1;
+      const card = document.createElement('div');
+      card.className = 'event-card';
+      card.innerHTML = `
+        <div class="event-month">${months[date.getMonth()]} ${date.getFullYear()}</div>
+        <div class="event-date">${date.getDate()}</div>
+        <div class="event-name">TEENIE TINY TURN UP</div>
+        <div class="event-recurring">${isFirst ? 'New Years Event — The First One' : ''}</div>
+      `;
+      pastContainer.appendChild(card);
     });
-  </script>
+
+  });
+</script>
 
 </body>
 </html>
