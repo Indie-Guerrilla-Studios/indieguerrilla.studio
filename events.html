@@ -344,9 +344,13 @@
         <div class="event-month" id="event-month"></div>
         <div class="event-date" id="event-day"></div>
         <div class="event-name">TEENIE TINY TURN UP</div>
-        <div class="event-recurring">Every last Saturday of the month</div>
-        <a href="https://www.facebook.com/events/1597867421305149" target="_blank" class="event-link">
-          <span>VIEW ON FACEBOOK &nbsp;▶</span>
+        <div class="event-recurring" id="event-recurring">Every last Saturday of the month</div>
+        <div style="display:flex;gap:16px;margin-top:16px;">
+  <button onclick="changeMonth(-1)" class="event-link"><span>◀ PREV</span></button>
+  <button onclick="changeMonth(1)" class="event-link"><span>NEXT ▶</span></button>
+</div>
+        <a id="event-fb-link" href="https://www.facebook.com/events/1597867421305149" target="_blank" class="event-link">
+            <span id="event-fb-text">VIEW ON FACEBOOK &nbsp;▶</span>
         </a>
       </div>
 
@@ -365,61 +369,101 @@
   </footer>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+let currentMonth;
+let currentYear;
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 
-    // Calculate last Saturday of any given month
-    function getLastSaturday(year, month) {
-      const lastDay = new Date(year, month + 1, 0);
-      const dayOfWeek = lastDay.getDay();
-      const diff = (dayOfWeek >= 6) ? dayOfWeek - 6 : dayOfWeek + 1;
-      return new Date(year, month, lastDay.getDate() - diff);
-    }
+function getLastSaturday(year, month) {
+  const lastDay = new Date(year, month + 1, 0);
+  const dayOfWeek = lastDay.getDay();
+  const diff = (dayOfWeek >= 6) ? dayOfWeek - 6 : dayOfWeek + 1;
+  return new Date(year, month, lastDay.getDate() - diff);
+}
 
-    const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
-    const today = new Date();
-    const startDate = new Date(2026, 0); // January 2026
+function changeMonth(direction) {
+  currentMonth += direction;
 
-    // Build list of all events from start to now
-    const pastEvents = [];
-    let current = new Date(startDate);
+  if (currentMonth > 11) { currentMonth = 11; }
+  if (currentMonth < new Date().getMonth()) { currentMonth = new Date().getMonth(); }
 
-    while (current <= today) {
-      const eventDate = getLastSaturday(current.getFullYear(), current.getMonth());
-      pastEvents.push(new Date(eventDate));
-      current.setMonth(current.getMonth() + 1);
-    }
+  const newDate = getLastSaturday(currentYear, currentMonth);
+  document.getElementById('event-month').textContent = months[newDate.getMonth()] + ' ' + newDate.getFullYear();
 
-    // Next upcoming event
-    let upcomingDate = getLastSaturday(today.getFullYear(), today.getMonth());
-    if (upcomingDate < today) {
-      const next = new Date(today.getFullYear(), today.getMonth() + 1);
-      upcomingDate = getLastSaturday(next.getFullYear(), next.getMonth());
-    }
+  if (newDate.getMonth() === 11) {
+    document.getElementById('event-day').textContent = 'TBD';
+    document.getElementById('event-recurring').textContent = 'Date pending — Holiday schedule';
+  } else {
+    document.getElementById('event-day').textContent = newDate.getDate();
+    document.getElementById('event-recurring').textContent = 'Every last Saturday of the month';
+  }
+const fbLink = document.getElementById('event-fb-link');
+const fbText = document.getElementById('event-fb-text');
 
-    // Render upcoming
-    document.getElementById('event-month').textContent = months[upcomingDate.getMonth()] + ' ' + upcomingDate.getFullYear();
+if (currentMonth === 4 && currentYear === 2026) {
+  fbLink.href = 'https://www.facebook.com/events/1597867421305149';
+  fbText.textContent = 'VIEW ON FACEBOOK ▶';
+  fbLink.style.pointerEvents = 'auto';
+  fbLink.style.opacity = '1';
+} else {
+  fbLink.href = '#';
+  fbText.textContent = 'DETAILS COMING SOON';
+  fbLink.style.pointerEvents = 'none';
+  fbLink.style.opacity = '0.4';
+}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const today = new Date();
+  const startDate = new Date(2026, 0);
+
+  const pastEvents = [];
+  let current = new Date(startDate);
+
+  while (current <= today) {
+    const eventDate = getLastSaturday(current.getFullYear(), current.getMonth());
+    pastEvents.push(new Date(eventDate));
+    current.setMonth(current.getMonth() + 1);
+  }
+
+  let upcomingDate = getLastSaturday(today.getFullYear(), today.getMonth());
+  if (upcomingDate < today) {
+    const next = new Date(today.getFullYear(), today.getMonth() + 1);
+    upcomingDate = getLastSaturday(next.getFullYear(), next.getMonth());
+  }
+
+  currentMonth = upcomingDate.getMonth();
+  currentYear = upcomingDate.getFullYear();
+
+  document.getElementById('event-month').textContent = months[upcomingDate.getMonth()] + ' ' + upcomingDate.getFullYear();
+
+  if (upcomingDate.getMonth() === 11) {
+    document.getElementById('event-day').textContent = 'TBD';
+    document.getElementById('event-recurring').textContent = 'Date pending — Holiday schedule';
+  } else {
     document.getElementById('event-day').textContent = upcomingDate.getDate();
+  }
 
-    // Render past events
-    const pastContainer = document.getElementById('past-events');
-    const reversed = pastEvents.filter(d => d < today).reverse();
+  const pastContainer = document.getElementById('past-events');
+  const reversed = pastEvents.filter(d => d < today).reverse();
 
-    reversed.forEach((date, index) => {
-      const isFirst = index === reversed.length - 1;
-      const card = document.createElement('div');
-      card.className = 'event-card';
-      card.innerHTML = `
-        <div class="event-month">${months[date.getMonth()]} ${date.getFullYear()}</div>
-        <div class="event-date">${date.getDate()}</div>
-        <div class="event-name">TEENIE TINY TURN UP</div>
-        <div class="event-recurring">${isFirst ? 'New Years Event — The First One' : ''}</div>
-      `;
-      pastContainer.appendChild(card);
-    });
-
+  reversed.forEach((date, index) => {
+    const isFirst = index === reversed.length - 1;
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.innerHTML = `
+      <div class="event-month">${months[date.getMonth()]} ${date.getFullYear()}</div>
+      <div class="event-date">${date.getDate()}</div>
+      <div class="event-name">TEENIE TINY TURN UP</div>
+      <div class="event-recurring">${isFirst ? 'New Years Event — The First One' : ''}</div>
+    `;
+    pastContainer.appendChild(card);
   });
+
+});
 </script>
 
 </body>
