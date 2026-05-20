@@ -141,6 +141,8 @@
       max-width: 1100px;
       margin: 0 auto;
       padding: 140px 40px 100px;
+      display: block;
+      
     }
 
     .section-label {
@@ -177,6 +179,16 @@
       background: var(--border);
       border: 1px solid var(--border);
     }
+
+    .past-events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        width: 100%;
+        margin-top: 8px;
+}
 
     .event-card {
       background: var(--dark);
@@ -340,6 +352,117 @@
     cursor: pointer;
   }
 }
+.calendar-wrap {
+  background: var(--dark);
+  border: 1px solid var(--border);
+  padding: 40px;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.cal-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--purple);
+  letter-spacing: 0.05em;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.cal-day-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--dim);
+  text-align: center;
+  letter-spacing: 0.1em;
+  padding: 8px 0;
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  cursor: default;
+  position: relative;
+}
+
+.cal-day.empty { background: transparent; }
+
+.cal-day.has-event {
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 2px;
+}
+
+.cal-day.past-event {
+  background: rgba(139,105,167,0.15);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+}
+
+.cal-day.future-event {
+  background: rgba(154,29,42,0.1);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+
+.cal-day.tbd-event {
+  background: rgba(139,156,164,0.15);
+  color: var(--grey);
+  border: 1px dashed var(--grey);
+}
+
+.cal-day.today {
+  outline: 2px solid var(--blue);
+}
+
+.cal-legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dim);
+  align-items: center;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.legend-dot.past { background: rgba(139,105,167,0.5); border: 1px solid var(--purple); }
+.legend-dot.future { background: rgba(154,29,42,0.3); border: 1px solid var(--orange); }
+.legend-dot.tbd { background: rgba(139,156,164,0.15); border: 1px dashed var(--grey); }
+
+.cal-event-detail {
+  background: var(--dark);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--orange);
+  padding: 28px 32px;
+  margin-bottom: 40px;
+  animation: fadeUp 0.3s ease both;
+  width: 100%;
+}
+
   </style>
 </head>
 <body>
@@ -363,24 +486,42 @@
 
     <div class="events-grid">
 
-      <div class="event-card">
-        <div class="event-month" id="event-month"></div>
-        <div class="event-date" id="event-day"></div>
-        <div class="event-name">TEENIE TINY TURN UP</div>
-        <div class="event-recurring" id="event-recurring">Every last Saturday of the month</div>
-        <div style="display:flex;gap:16px;margin-top:16px;">
-  <button onclick="changeMonth(-1)" class="event-link"><span>◀ PREV</span></button>
-  <button onclick="changeMonth(1)" class="event-link"><span>NEXT ▶</span></button>
-</div>
-        <a id="event-fb-link" href="https://www.facebook.com/events/1597867421305149" target="_blank" class="event-link">
-            <span id="event-fb-text">VIEW ON FACEBOOK &nbsp;▶</span>
-        </a>
-      </div>
+      <div class="calendar-wrap">
+  <div class="cal-header">
+    <button onclick="changeCalMonth(-1)" class="event-link"><span>◀</span></button>
+    <div class="cal-title" id="cal-title">MAY 2026</div>
+    <button onclick="changeCalMonth(1)" class="event-link"><span>▶</span></button>
+  </div>
 
-    </div>
+  <div class="cal-grid">
+    <div class="cal-day-label">SUN</div>
+    <div class="cal-day-label">MON</div>
+    <div class="cal-day-label">TUE</div>
+    <div class="cal-day-label">WED</div>
+    <div class="cal-day-label">THU</div>
+    <div class="cal-day-label">FRI</div>
+    <div class="cal-day-label">SAT</div>
+  </div>
+
+  <div class="cal-grid" id="cal-days"></div>
+
+  <div class="cal-legend">
+    <span class="legend-dot past"></span> Past Event
+    <span class="legend-dot future"></span> Upcoming Event
+    <span class="legend-dot tbd"></span> TBD
+  </div>
+</div>
+
+<div id="cal-event-detail" class="cal-event-detail" style="display:none;">
+  <div class="event-name" id="detail-name"></div>
+  <div class="event-recurring" id="detail-note"></div>
+  <a id="detail-fb-link" href="#" target="_blank" class="event-link" style="margin-top:16px;">
+    <span id="detail-fb-text">VIEW ON FACEBOOK ▶</span>
+  </a>
+</div>
      <div class="section-label" style="margin-top:60px;">Past Events</div>
     <h2 class="section-title">THE ARCHIVE</h2>
-    <div class="events-grid" id="past-events"></div>
+    <div class="past-events-grid" id="past-events"></div>
   </main>
 
   <footer>
@@ -392,10 +533,15 @@
   </footer>
 
 <script>
-let currentMonth;
-let currentYear;
+let calMonth = new Date().getMonth();
+let calYear = 2026;
 
 const months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+
+// ONE-OFF EVENTS — add yours here
+const oneOffEvents = [
+   { month: 3, day: 17, year: 2026, name: 'Dan Mini Elementary', note: 'Special Event', fb: '' }
+];
 
 function getLastSaturday(year, month) {
   const lastDay = new Date(year, month + 1, 0);
@@ -404,95 +550,139 @@ function getLastSaturday(year, month) {
   return new Date(year, month, lastDay.getDate() - diff);
 }
 
-function changeMonth(direction) {
-  currentMonth += direction;
-
-  if (currentMonth > 11) { currentMonth = 11; }
-  if (currentMonth < new Date().getMonth()) { currentMonth = new Date().getMonth(); }
-
-  const newDate = getLastSaturday(currentYear, currentMonth);
-  document.getElementById('event-month').textContent = months[newDate.getMonth()] + ' ' + newDate.getFullYear();
-
-  if (newDate.getMonth() === 11) {
-    document.getElementById('event-day').textContent = 'TBD';
-    document.getElementById('event-recurring').textContent = 'Date pending — Holiday schedule';
-  } else {
-    document.getElementById('event-day').textContent = newDate.getDate();
-    document.getElementById('event-recurring').textContent = 'Every last Saturday of the month';
+function getAllEvents() {
+  const events = [];
+  for (let m = 0; m < 12; m++) {
+    const ls = getLastSaturday(2026, m);
+    events.push({
+      month: m,
+      day: ls.getDate(),
+      year: 2026,
+      name: 'TEENIE TINY TURN UP',
+      note: m === 0 ? 'New Years Event — The First One' : m === 11 ? 'Date pending — Holiday schedule' : 'Last Saturday of the month',
+      tbd: m === 11,
+      fb: m === 4 ? 'https://www.facebook.com/events/1597867421305149' : ''
+    });
   }
-const fbLink = document.getElementById('event-fb-link');
-const fbText = document.getElementById('event-fb-text');
-
-if (currentMonth === 4 && currentYear === 2026) {
-  fbLink.href = 'https://www.facebook.com/events/1597867421305149';
-  fbText.textContent = 'VIEW ON FACEBOOK ▶';
-  fbLink.style.pointerEvents = 'auto';
-  fbLink.style.opacity = '1';
-} else {
-  fbLink.href = '#';
-  fbText.textContent = 'DETAILS COMING SOON';
-  fbLink.style.pointerEvents = 'none';
-  fbLink.style.opacity = '0.4';
-}
+  oneOffEvents.forEach(e => events.push(e));
+  return events;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.getElementById('year').textContent = new Date().getFullYear();
-
+function renderCalendar() {
   const today = new Date();
-  const startDate = new Date(2026, 0);
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const allEvents = getAllEvents();
 
-  const pastEvents = [];
-  let current = new Date(startDate);
+  document.getElementById('cal-title').textContent = months[calMonth] + ' ' + calYear;
 
-  while (current <= today) {
-    const eventDate = getLastSaturday(current.getFullYear(), current.getMonth());
-    pastEvents.push(new Date(eventDate));
-    current.setMonth(current.getMonth() + 1);
+  const grid = document.getElementById('cal-days');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    grid.appendChild(empty);
   }
 
-  let upcomingDate = getLastSaturday(today.getFullYear(), today.getMonth());
-  if (upcomingDate < today) {
-    const next = new Date(today.getFullYear(), today.getMonth() + 1);
-    upcomingDate = getLastSaturday(next.getFullYear(), next.getMonth());
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.textContent = d;
+
+    const thisDate = new Date(calYear, calMonth, d);
+    const isToday = thisDate.toDateString() === today.toDateString();
+    if (isToday) cell.classList.add('today');
+
+    const event = allEvents.find(e => e.month === calMonth && e.day === d && e.year === calYear);
+
+    if (event) {
+      cell.classList.add('has-event');
+      if (event.tbd) {
+        cell.classList.add('tbd-event');
+      } else if (thisDate < today) {
+        cell.classList.add('past-event');
+      } else {
+        cell.classList.add('future-event');
+      }
+
+      cell.onclick = () => showDetail(event, thisDate < today);
+    }
+
+    grid.appendChild(cell);
   }
 
-  currentMonth = upcomingDate.getMonth();
-  currentYear = upcomingDate.getFullYear();
+  document.getElementById('cal-event-detail').style.display = 'none';
+}
 
-  document.getElementById('event-month').textContent = months[upcomingDate.getMonth()] + ' ' + upcomingDate.getFullYear();
+function showDetail(event, isPast) {
+  document.getElementById('detail-name').textContent = event.name;
+  document.getElementById('detail-note').textContent = event.note;
 
-  if (upcomingDate.getMonth() === 11) {
-    document.getElementById('event-day').textContent = 'TBD';
-    document.getElementById('event-recurring').textContent = 'Date pending — Holiday schedule';
+  const fbLink = document.getElementById('detail-fb-link');
+  const fbText = document.getElementById('detail-fb-text');
+
+  if (event.fb) {
+    fbLink.href = event.fb;
+    fbText.textContent = 'VIEW ON FACEBOOK ▶';
+    fbLink.style.display = 'block';
+    fbLink.style.pointerEvents = 'auto';
+    fbLink.style.opacity = '1';
+  } else if (isPast) {
+    fbLink.style.display = 'none';
+  } else if (event.tbd) {
+    fbLink.style.display = 'block';
+    fbLink.href = '#';
+    fbText.textContent = 'DATE TBD — CHECK BACK SOON';
+    fbLink.style.pointerEvents = 'none';
+    fbLink.style.opacity = '0.4';
   } else {
-    document.getElementById('event-day').textContent = upcomingDate.getDate();
+    fbLink.style.display = 'block';
+    fbLink.href = '#';
+    fbText.textContent = 'DETAILS COMING SOON';
+    fbLink.style.pointerEvents = 'none';
+    fbLink.style.opacity = '0.4';
   }
 
-  const pastContainer = document.getElementById('past-events');
-  const reversed = pastEvents.filter(d => d < today).reverse();
+  document.getElementById('cal-event-detail').style.display = 'block';
+}
 
-  reversed.forEach((date, index) => {
-    const isFirst = index === reversed.length - 1;
-    const card = document.createElement('div');
-    card.className = 'event-card';
-    card.innerHTML = `
-      <div class="event-month">${months[date.getMonth()]} ${date.getFullYear()}</div>
-      <div class="event-date">${date.getDate()}</div>
-      <div class="event-name">TEENIE TINY TURN UP</div>
-      <div class="event-recurring">${isFirst ? 'New Years Event — The First One' : ''}</div>
-    `;
-    pastContainer.appendChild(card);
-  });
-
-});
+function changeCalMonth(direction) {
+  calMonth += direction;
+  if (calMonth < 0) calMonth = 0;
+  if (calMonth > 11) calMonth = 11;
+  renderCalendar();
+}
 
 function toggleMenu() {
   const nav = document.querySelector('.nav-links');
   nav.classList.toggle('open');
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('year').textContent = new Date().getFullYear();
+  renderCalendar();
+
+  const pastContainer = document.getElementById('past-events');
+  const today = new Date();
+  const allEvents = getAllEvents();
+
+  const pastList = allEvents
+    .filter(e => new Date(e.year, e.month, e.day) < today)
+    .sort((a, b) => new Date(b.year, b.month, b.day) - new Date(a.year, a.month, a.day));
+
+  pastList.forEach(event => {
+    const card = document.createElement('div');
+    card.className = 'event-card';
+    card.innerHTML = `
+      <div class="event-month">${months[event.month]} ${event.year}</div>
+      <div class="event-date">${event.day}</div>
+      <div class="event-name">${event.name}</div>
+      <div class="event-recurring">${event.note}</div>
+    `;
+    pastContainer.appendChild(card);
+  });
+});
 </script>
 
 </body>
