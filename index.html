@@ -626,9 +626,31 @@ body {
       footer { padding: 30px 20px; flex-direction: column; align-items: flex-start; }
     }
 
-    @media (max-width: 480px) {
-      .nav-links { display: none; }
-    }
+   @media (max-width: 480px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.98);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    gap: 20px;
+  }
+
+  .nav-links.open { display: flex; }
+
+  .hamburger {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--purple);
+    cursor: pointer;
+  }
+}
   </style>
 </head>
 <body>
@@ -638,6 +660,7 @@ body {
   <!-- NAV -->
   <nav>
     <div class="nav-logo">Indie Guerrilla Studio</div>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
     <ul class="nav-links">
       <li><a href="#hero">Home</a></li>
       <li><a href="#services">Services</a></li>
@@ -843,6 +866,11 @@ body {
       //Form handled by Formspree
 
     });
+function toggleMenu() {
+  const nav = document.querySelector('.nav-links');
+  nav.classList.toggle('open');
+}
+    
   </script>
 
 </body>
